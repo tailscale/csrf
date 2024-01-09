@@ -4,8 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
-	"fmt"
-	"html/template"
 	"net/http"
 	"net/url"
 )
@@ -44,27 +42,6 @@ func FailureReason(r *http.Request) error {
 // checks for non-browser clients using authorization tokens against your API.
 func UnsafeSkipCheck(r *http.Request) *http.Request {
 	return contextSave(r, skipCheckKey, true)
-}
-
-// TemplateField is a template helper for html/template that provides an <input> field
-// populated with a CSRF token.
-//
-// Example:
-//
-//	// The following tag in our form.tmpl template:
-//	{{ .csrfField }}
-//
-//	// ... becomes:
-//	<input type="hidden" name="gorilla.csrf.Token" value="<token>">
-func TemplateField(r *http.Request) template.HTML {
-	if name, err := contextGet(r, formKey); err == nil {
-		fragment := fmt.Sprintf(`<input type="hidden" name="%s" value="%s">`,
-			name, Token(r))
-
-		return template.HTML(fragment) // #nosec G203
-	}
-
-	return template.HTML("")
 }
 
 // mask returns a unique-per-request token to mitigate the BREACH attack
